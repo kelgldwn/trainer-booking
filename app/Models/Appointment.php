@@ -13,8 +13,13 @@ class Appointment extends Model
     ];
 
     // Optional: define relationships
-    public function coach()
-    {
-        return $this->belongsTo(User::class, 'client_id');
-    }
+    public function client()
+{
+    return $this->belongsTo(User::class, 'client_id');
+}
+
+    public function trainingSession()
+{
+    return $this->belongsTo(TrainingSession::class);
+}
 }
