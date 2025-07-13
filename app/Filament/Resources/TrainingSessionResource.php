@@ -12,6 +12,8 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DateTimePicker;
+use Illuminate\Support\Carbon;
+
 
 class TrainingSessionResource extends Resource
 {
@@ -19,22 +21,32 @@ class TrainingSessionResource extends Resource
     protected static ?string $navigationGroup = 'Training Management';
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
 
-    public static function form(Form $form): Form
-    {
-        return $form->schema([
-            Select::make('coach_id')
-                ->label('Coach')
-                ->options(User::role('coach')->pluck('name', 'id'))
-                ->searchable()
-                ->required(),
+    
+public static function form(Form $form): Form
+{
+    return $form->schema([
+        Select::make('coach_id')
+            ->label('Coach')
+            ->options(User::role('coach')->pluck('name', 'id'))
+            ->searchable()
+            ->required(),
 
-            TextInput::make('title')->required()->maxLength(255),
-            TextInput::make('description')->maxLength(500),
+        TextInput::make('title')->required()->maxLength(255),
+        TextInput::make('description')->maxLength(500),
 
-            DateTimePicker::make('starts_at')->required(),
-            DateTimePicker::make('ends_at')->required(),
-        ]);
-    }
+        DateTimePicker::make('starts_at')
+            ->label('Start Date & Time')
+            ->required()
+            ->afterOrEqual(now()) // ✅ Filament way
+            ->native(false),
+
+        DateTimePicker::make('ends_at')
+            ->label('End Date & Time')
+            ->required()
+            ->afterOrEqual('starts_at') // ✅ Reference to another field
+            ->native(false),
+    ]);
+}
 
     public static function table(Tables\Table $table): Tables\Table
     {
