@@ -22,3 +22,4 @@ class MiddlewareServiceProvider extends ServiceProvider
         //
     }
 }
+
