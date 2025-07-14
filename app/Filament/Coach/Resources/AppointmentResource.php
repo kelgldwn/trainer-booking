@@ -36,6 +36,7 @@ class AppointmentResource extends Resource
                     'pending' => 'Pending',
                     'approved' => 'Approved',
                     'rejected' => 'Rejected',
+                    'cancelled' => 'Cancelled', // ✅ Optional
                 ])
                 ->required()
                 ->native(false),
@@ -43,22 +44,37 @@ class AppointmentResource extends Resource
     }
 
     public static function table(Tables\Table $table): Tables\Table
-    {
-        return $table
-            ->columns([
-                TextColumn::make('client.name')->label('Client'),
-                TextColumn::make('trainingSession.title')->label('Session'),
-                TextColumn::make('status')->badge()->color(fn ($state) => match ($state) {
-                    'pending' => 'gray',
-                    'approved' => 'success',
-                    'rejected' => 'danger',
-                }),
-                TextColumn::make('created_at')->label('Booked At')->dateTime(),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ]);
-    }
+{
+    return $table
+        ->columns([
+            TextColumn::make('client.name')->label('Client'),
+            TextColumn::make('trainingSession.title')->label('Session'),
+            TextColumn::make('status')->badge()->color(fn ($state) => match ($state) {
+                'pending' => 'gray',
+                'approved' => 'success',
+                'rejected' => 'danger',
+                'cancelled' => 'warning',
+                default => 'secondary',
+            }),
+            TextColumn::make('created_at')->label('Booked At')->dateTime(),
+        ])
+        ->actions([
+            Tables\Actions\Action::make('approve')
+                ->label('Approve')
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->visible(fn ($record) => $record->status === 'pending')
+                ->action(fn ($record) => $record->update(['status' => 'approved'])),
+
+            Tables\Actions\Action::make('reject')
+                ->label('Reject')
+                ->icon('heroicon-o-x-circle')
+                ->color('danger')
+                ->visible(fn ($record) => $record->status === 'pending')
+                ->requiresConfirmation()
+                ->action(fn ($record) => $record->update(['status' => 'rejected'])),
+        ]);
+}
 
     public static function getPages(): array
     {

@@ -13,8 +13,14 @@ return new class extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('users');
-            $table->foreignId('training_session_id')->constrained();
+            $table->foreignId('client_id')
+                ->constrained('users')
+                ->onDelete('cascade');
+
+            $table->foreignId('training_session_id')
+                ->constrained()
+                ->onDelete('cascade');
+
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
         });

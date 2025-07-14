@@ -10,6 +10,8 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DateTimePicker;
 use App\Filament\Coach\Resources\TrainingSessionResource\Pages;
+use Illuminate\Support\Carbon;
+
 
 class TrainingSessionResource extends Resource
 {
@@ -26,8 +28,19 @@ class TrainingSessionResource extends Resource
     {
         return $form->schema([
             TextInput::make('title')->required()->maxLength(255),
-            DateTimePicker::make('starts_at')->required(),
-            DateTimePicker::make('ends_at')->required(),
+            TextInput::make('description')->maxLength(500),
+    
+            DateTimePicker::make('starts_at')
+                ->label('Start Date & Time')
+                ->required()
+                ->afterOrEqual(now()) // ✅ Filament way
+                ->native(false),
+    
+            DateTimePicker::make('ends_at')
+                ->label('End Date & Time')
+                ->required()
+                ->afterOrEqual('starts_at') // ✅ Reference to another field
+                ->native(false),
         ]);
     }
 
@@ -58,13 +71,4 @@ class TrainingSessionResource extends Resource
             'edit' => Pages\EditTrainingSession::route('/{record}/edit'),
         ];
     }
-
-    protected static function booted()
-{
-    static::creating(function ($trainingSession) {
-        if (auth()->check() && empty($trainingSession->coach_id)) {
-            $trainingSession->coach_id = auth()->id();
-        }
-    });
-}
 }

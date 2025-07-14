@@ -37,6 +37,7 @@ class AppointmentResource extends Resource
                     'pending' => 'Pending',
                     'approved' => 'Approved',
                     'rejected' => 'Rejected',
+                    'cancelled' => 'Cancelled', // ✅ Optional
                 ])
                 ->required(),
         ]);
@@ -51,6 +52,7 @@ class AppointmentResource extends Resource
                 'pending' => 'gray',
                 'approved' => 'success',
                 'rejected' => 'danger',
+                'cancelled' => 'warning', // ✅ Add this line
             }),
             Tables\Columns\TextColumn::make('created_at')->dateTime(),
         ])

@@ -14,9 +14,20 @@ class TrainingSession extends Model
         'ends_at',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($trainingSession) {
+            if (auth()->check() && empty($trainingSession->coach_id)) {
+                $trainingSession->coach_id = auth()->id();
+            }
+        });
+    }
+
     // Optional: define relationships
     public function coach()
     {
         return $this->belongsTo(User::class, 'coach_id');
     }
+
+    protected $dates = ['start_time']; 
 }
