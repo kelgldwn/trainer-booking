@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Select;
 use App\Filament\Client\Resources\AppointmentResource\Pages;
+use Illuminate\Validation\ValidationException;
 
 class AppointmentResource extends Resource
 {
@@ -34,11 +35,9 @@ class AppointmentResource extends Resource
     }
 
     public static function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['client_id'] = auth()->id();
-        $data['status'] = 'pending';
-        return $data;
-    }
+{
+    return $data;
+}
 
     public static function table(Tables\Table $table): Tables\Table
 {

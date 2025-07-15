@@ -41,6 +41,13 @@ class TrainingSessionResource extends Resource
                 ->required()
                 ->afterOrEqual('starts_at') // ✅ Reference to another field
                 ->native(false),
+
+            TextInput::make('max_clients')
+                ->label('Max Clients')
+                ->numeric()
+                ->minValue(1)
+                ->default(10)
+                ->required(),
         ]);
     }
 
@@ -56,6 +63,7 @@ class TrainingSessionResource extends Resource
             Tables\Columns\TextColumn::make('title'),
             Tables\Columns\TextColumn::make('starts_at')->dateTime(),
             Tables\Columns\TextColumn::make('ends_at')->dateTime(),
+            Tables\Columns\TextColumn::make('max_clients')->label('Max Clients'), // ✅ new
         ])
         ->actions([
             Tables\Actions\EditAction::make(),

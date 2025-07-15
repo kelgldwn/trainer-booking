@@ -12,6 +12,7 @@ class TrainingSession extends Model
         'description',
         'starts_at',
         'ends_at',
+        'max_clients'
     ];
 
     protected static function booted()

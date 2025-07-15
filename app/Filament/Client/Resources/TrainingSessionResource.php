@@ -25,6 +25,7 @@ class TrainingSessionResource extends Resource
             Tables\Columns\TextColumn::make('title'),
             Tables\Columns\TextColumn::make('starts_at')->dateTime(),
             Tables\Columns\TextColumn::make('ends_at')->dateTime(),
+            Tables\Columns\TextColumn::make('max_clients')->label('Max Clients'), // ✅ new
         ]);
     }
 
