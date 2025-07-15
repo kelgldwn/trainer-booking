@@ -65,8 +65,9 @@ class AppointmentResource extends Resource
             ->icon('heroicon-o-x-circle')
             ->color('warning')
             ->requiresConfirmation()
-            ->visible(fn ($record) => in_array($record->status, ['pending', 'approved']))
+            ->visible(fn ($record) => $record->status === 'pending') // only allow canceling if still pending
             ->action(fn ($record) => $record->update(['status' => 'cancelled'])),
+
     ]);
 }
 
