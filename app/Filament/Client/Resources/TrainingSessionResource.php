@@ -38,7 +38,7 @@ class TrainingSessionResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole('client');
+        return auth()->check() && auth()->user()->hasRole('client');
     }
 
     public static function canCreate(): bool { return false; }

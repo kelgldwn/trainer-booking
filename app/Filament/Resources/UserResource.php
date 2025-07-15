@@ -79,6 +79,6 @@ class UserResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole('admin');
+        return auth()->check() && auth()->user()->hasRole('admin');
     }
 }

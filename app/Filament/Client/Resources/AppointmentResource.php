@@ -81,7 +81,7 @@ class AppointmentResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole('client');
+        return auth()->check() && auth()->user()->hasRole('client');
     }
 
     public static function canDelete($record): bool { return false; }

@@ -82,6 +82,6 @@ class TrainingSessionResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole('coach');
+        return auth()->check() && auth()->user()->hasRole('coach');
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Filament\Client\Pages\Register;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,3 +16,5 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::get('/register', Register::class)->name('filament.client.register');
