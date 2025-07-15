@@ -84,6 +84,11 @@ class AppointmentResource extends Resource
         ];
     }
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasRole('coach');
+    }
+
     public static function canCreate(): bool
     {
         return false;

@@ -38,6 +38,11 @@ class ClientResource extends Resource
         ];
     }
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasRole('coach');
+    }
+
     public static function canCreate(): bool { return false; }
     public static function canEdit($record): bool { return false; }
     public static function canDelete($record): bool { return false; }

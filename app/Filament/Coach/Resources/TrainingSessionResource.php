@@ -71,4 +71,9 @@ class TrainingSessionResource extends Resource
             'edit' => Pages\EditTrainingSession::route('/{record}/edit'),
         ];
     }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasRole('coach');
+    }
 }
