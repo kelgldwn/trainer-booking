@@ -3,12 +3,12 @@
 namespace App\Filament\Client\Resources\AppointmentResource\Pages;
 
 use App\Filament\Client\Resources\AppointmentResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use App\Models\Appointment;
 use App\Models\TrainingSession;
 use Illuminate\Validation\ValidationException;
 use Filament\Notifications\Notification;
+use App\Notifications\NewTrainingSessionBooked; // ✅ Make sure this line exists
 
 class CreateAppointment extends CreateRecord
 {
@@ -61,5 +61,16 @@ class CreateAppointment extends CreateRecord
             ->body('Your session has been booked and is pending approval.')
             ->success()
             ->send();
+    }
+
+    // ✅ Coach Notification Here
+    protected function afterCreate(): void
+    {
+        $appointment = $this->record; // This is the saved Appointment model
+        $coach = $appointment->trainingSession->coach;
+
+        if ($coach && $coach->email) {
+            $coach->notify(new NewTrainingSessionBooked($appointment));
+        }
     }
 }

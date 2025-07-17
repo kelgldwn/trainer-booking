@@ -12,6 +12,8 @@ use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use App\Filament\Coach\Resources\AppointmentResource\Pages;
 use Illuminate\Database\Eloquent\Model;
+use App\Notifications\AppointmentStatusUpdated;
+use App\Notifications\AppointmentCancelledByClient;
 
 
 class AppointmentResource extends Resource
@@ -64,7 +66,14 @@ class AppointmentResource extends Resource
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->visible(fn ($record) => $record->status === 'pending')
-                ->action(fn ($record) => $record->update(['status' => 'approved'])),
+                ->action(function ($record) {
+                    $record->update(['status' => 'approved']);
+
+                    // Notify client
+                    if ($record->client) {
+                        $record->client->notify(new AppointmentStatusUpdated($record));
+                    }
+                }),
 
             Tables\Actions\Action::make('reject')
                 ->label('Reject')
@@ -72,10 +81,16 @@ class AppointmentResource extends Resource
                 ->color('danger')
                 ->visible(fn ($record) => $record->status === 'pending')
                 ->requiresConfirmation()
-                ->action(fn ($record) => $record->update(['status' => 'rejected'])),
+                ->action(function ($record) {
+                    $record->update(['status' => 'rejected']);
+
+                    // Notify client
+                    if ($record->client) {
+                        $record->client->notify(new AppointmentStatusUpdated($record));
+                    }
+                }),
         ]);
 }
-
     public static function getPages(): array
     {
         return [
