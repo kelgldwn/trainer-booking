@@ -15,51 +15,51 @@ class CreateAppointment extends CreateRecord
     protected static string $resource = AppointmentResource::class;
 
     protected function beforeCreate(): void
-{
-    $trainingSessionId = $this->data['training_session_id'];
-    $userId = auth()->id();
+    {
+        $trainingSessionId = $this->data['training_session_id'];
+        $userId = auth()->id();
 
-    $alreadyBooked = Appointment::where('client_id', $userId)
-        ->where('training_session_id', $trainingSessionId)
-        ->whereIn('status', ['pending', 'approved'])
-        ->exists();
+        $alreadyBooked = Appointment::where('client_id', $userId)
+            ->where('training_session_id', $trainingSessionId)
+            ->whereIn('status', ['pending', 'approved'])
+            ->exists();
 
-    if ($alreadyBooked) {
+        if ($alreadyBooked) {
+            Notification::make()
+                ->title('Duplicate Booking')
+                ->body('You have already booked this session.')
+                ->danger()
+                ->send();
+
+            throw ValidationException::withMessages([
+                'training_session_id' => 'You already booked this session.',
+            ]);
+        }
+
+        $session = TrainingSession::find($trainingSessionId);
+        $currentCount = Appointment::where('training_session_id', $trainingSessionId)
+            ->whereIn('status', ['pending', 'approved'])
+            ->count();
+
+        if ($currentCount >= $session->max_clients) {
+            Notification::make()
+                ->title('Session Full')
+                ->body('This session is already full.')
+                ->danger()
+                ->send();
+
+            throw ValidationException::withMessages([
+                'training_session_id' => 'This session is already full.',
+            ]);
+        }
+
+        $this->data['client_id'] = $userId;
+        $this->data['status'] = 'pending';
+
         Notification::make()
-            ->title('Duplicate Booking')
-            ->body('You have already booked this session.')
-            ->danger()
+            ->title('Booked!')
+            ->body('Your session has been booked and is pending approval.')
+            ->success()
             ->send();
-
-        throw ValidationException::withMessages([
-            'training_session_id' => 'You already booked this session.',
-        ]);
     }
-
-    $session = TrainingSession::find($trainingSessionId);
-    $currentCount = Appointment::where('training_session_id', $trainingSessionId)
-        ->whereIn('status', ['pending', 'approved'])
-        ->count();
-
-    if ($currentCount >= $session->max_clients) {
-        Notification::make()
-            ->title('Session Full')
-            ->body('This session is already full.')
-            ->danger()
-            ->send();
-
-        throw ValidationException::withMessages([
-            'training_session_id' => 'This session is already full.',
-        ]);
-    }
-
-    $this->data['client_id'] = $userId;
-    $this->data['status'] = 'pending';
-
-    Notification::make()
-        ->title('Booked!')
-        ->body('Your session has been booked and is pending approval.')
-        ->success()
-        ->send();
-}
 }

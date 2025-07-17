@@ -18,3 +18,7 @@ Route::middleware([
 });
 
 Route::get('/register', Register::class)->name('filament.client.register');
+
+Route::get('/filament-redirect', function () {
+    return view('dashboardfilament');
+})->middleware(['auth']);
